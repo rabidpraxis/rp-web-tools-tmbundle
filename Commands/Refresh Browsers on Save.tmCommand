@@ -7,7 +7,7 @@
 	<key>command</key>
 	<string>TPY=${TM_PYTHON:-python}
 
-"$TPY" "$TM_BUNDLE_SUPPORT/bin/browser_refresh.py &amp;"</string>
+"$TPY" "$TM_BUNDLE_SUPPORT/bin/refresh_browsers.py"</string>
 	<key>input</key>
 	<string>none</string>
 	<key>keyEquivalent</key>
@@ -15,7 +15,7 @@
 	<key>name</key>
 	<string>Refresh Browsers on Save</string>
 	<key>output</key>
-	<string>discard</string>
+	<string>showAsTooltip</string>
 	<key>scope</key>
 	<string>text.html, source.scss, source.sass, source.css</string>
 	<key>uuid</key>

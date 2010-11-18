@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>beforeRunningCommand</key>
+	<string>nop</string>
+	<key>command</key>
+	<string>TPY=${TM_PYTHON:-python}
+
+"$TPY" "$TM_BUNDLE_SUPPORT/bin/browser_refresh.py &amp;"</string>
+	<key>input</key>
+	<string>none</string>
+	<key>keyEquivalent</key>
+	<string>@s</string>
+	<key>name</key>
+	<string>Refresh Browsers on Save</string>
+	<key>output</key>
+	<string>discard</string>
+	<key>scope</key>
+	<string>text.html, source.scss, source.sass, source.css</string>
+	<key>uuid</key>
+	<string>3C99123B-D793-44A8-99A8-2F6F8F855F25</string>
+</dict>
+</plist>

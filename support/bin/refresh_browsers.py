@@ -15,6 +15,8 @@ try:
 except KeyError:
   do_title_contains = False
 
+delay = "0.25" # delay before refreshing
+
 # ============================================================================
 # dict containing the Applications
 #   appName: The name of the OS X process (differs from the display name)
@@ -23,13 +25,15 @@ except KeyError:
 apps = {
 "Safari"  : {"appName" : "Safari", 
              "command_active" : """osascript -e '
+                delay ${delay}
                 tell application "Safari" 
                   try
                     tell current tab of window 1 to do JavaScript "location.reload(true)"
                   end try
-                end tell'
-               """,
+                end tell
+               ' &>/dev/null &""",
              "command_title" : """osascript -e '
+               delay ${delay}
                tell application "Safari"
                	set wins_ to (tabs of windows whose name contains "${title}")
                	repeat with win_ in wins_
@@ -38,16 +42,18 @@ apps = {
                		end repeat
                	end repeat
                end tell           
-              '"""},
+              ' &>/dev/null &"""},
 "Chrome"  : {"appName" : "Google Chrome Helper",
              "command_active" : """osascript -e '
+                delay ${delay}
                 tell application "Google Chrome" 
                   try
                     tell active tab of window 1 to reload
                   end try
                 end tell
-                '""",
+                ' &>/dev/null &""",
              "command_title" : """osascript -e '
+               delay ${delay}
                tell application "Google Chrome"
                	set wins_ to (tabs of windows whose title contains "${title}")
                	repeat with win_ in wins_
@@ -56,18 +62,20 @@ apps = {
                		end repeat
                	end repeat
                end tell                
-             '"""},
+             ' &>/dev/null &"""},
 "Firefox" : {"appName" : "firefox-bin",
              "command_active" : """osascript -e '
+                 delay ${delay}
                  tell application "Firefox"
                  	if (count of (windows whose id is not -1)) is greater than 0 then
                    try
                       do shell script "echo 'BrowserReload()' | nc localhost 4242"
                    end try
                  end tell
-                 '""",
+                 ' &>/dev/null &""",
              # This is a nasty nasty mess.. I know. It works though.
              "command_title" : """osascript -e '
+             delay ${delay}
              tell application "Firefox"
              	if (count of (windows whose id is not -1)) is greater than 0 then
                 try
@@ -76,7 +84,7 @@ apps = {
                 end try
              	end if
              end tell
-             '"""}
+             ' &>/dev/null &"""}
 }
 
 # ====== Checks for running browser ==========================================
@@ -86,12 +94,9 @@ def check_app(arg):
              [0])>0
 
 # ====== lets go! ============================================================
-time.sleep(0.25)
 for k, v in apps.iteritems():
   if check_app(v['appName']):
     if do_title_contains:
-      # subprocess.Popen(v['command_title'].replace("${title}", tab_title).replace("${delay}", delay), shell=True)
-      os.system(v['command_title'].replace("${title}", tab_title).replace("${delay}", delay))
+      subprocess.Popen(v['command_title'].replace("${title}", tab_title).replace("${delay}", delay), shell=True)
     else:
-      os.system(v['command_active'].replace("${delay}", delay))
-      # subprocess.Popen(v['command_active'].replace("${delay}", delay), shell=True)
+      subprocess.Popen(v['command_active'].replace("${delay}", delay), shell=True)

@@ -16,9 +16,9 @@ except KeyError:
   do_title_contains = False
 
 try:
-  delay = os.environ['RP_REFRESH_DELAY']
+  delay = str(os.environ['RP_REFRESH_DELAY'])
 except KeyError:
-  delay = "0.1" # delay before refreshing
+  delay = "0.25" # delay before refreshing
 
 
 # ============================================================================
@@ -31,7 +31,6 @@ apps = {
     "appName" : "Safari", 
     "command_active" : 
     """\
-      delay ${delay}
       tell application "Safari" 
         try
           tell current tab of window 1 to do JavaScript "location.reload(true)"
@@ -40,7 +39,6 @@ apps = {
      """,
     "command_title" : 
     """\
-      delay ${delay}
       tell application "Safari"
       	set wins_ to (tabs of windows whose name contains "${title}")
       	repeat with win_ in wins_
@@ -50,11 +48,29 @@ apps = {
       	end repeat
       end tell           
      """},
+"Opera" : {
+    "appName" : "Opera",
+    "command_active" :
+    """\
+      tell application "Opera"
+      	set URL of front window to "javascript:location.reload(true)"
+      end tell
+    """,
+    "command_title" :
+    """\
+      tell application "Opera"
+      	set d_ct to count of documents
+      	repeat with ct from 0 to d_ct
+      		if (name of document ct as string) contains ${title} then
+      			set URL of document ct to "javascript:location.reload(true)"
+      		end if
+      	end repeat
+      end tell
+    """},
 "Chrome"  : {
     "appName" : "Google Chrome Helper",
     "command_active" : 
     """\
-      delay ${delay}
       tell application "Google Chrome" 
         try
           tell active tab of window 1 to reload
@@ -63,7 +79,6 @@ apps = {
       """,
     "command_title" : 
     """\
-      delay ${delay}
       tell application "Google Chrome"
       	set wins_ to (tabs of windows whose title contains "${title}")
       	repeat with win_ in wins_
@@ -77,7 +92,6 @@ apps = {
     "appName" : "firefox-bin",
     "command_active" : 
     """\
-      delay ${delay}
       tell application "Firefox"
       	if (count of (windows whose id is not -1)) is greater than 0 then
        try
@@ -88,7 +102,6 @@ apps = {
     # This is a nasty nasty mess.. I know. It works though.
     "command_title" : 
     """\
-      delay ${delay}
       tell application "Firefox"
       	if (count of (windows whose id is not -1)) is greater than 0 then
         try
@@ -110,12 +123,12 @@ def check_app(arg):
 def process_script(command_str, replace_obj):
   for k, v in replace_obj.iteritems():
     command_str = command_str.replace(k, v)
-  return 'osascript -e \'' + command_str + '\' &>/dev/null &'
+  return 'osascript -e \'delay ' + delay + '\n' + command_str + '\' &>/dev/null &'
 
 # ====== lets go! ============================================================
 for k, v in apps.iteritems():
   if check_app(v['appName']):
     if do_title_contains:
-      subprocess.Popen( process_script(v['command_title'], {"${title}":tab_title, "${delay}":delay}), shell=True)
+      subprocess.Popen( process_script(v['command_title'], {"${title}":tab_title}), shell=True)
     else:
-      subprocess.Popen( process_script(v['command_active'], {"${delay}":delay}), shell=True)
+      subprocess.Popen( process_script(v['command_active']), shell=True)

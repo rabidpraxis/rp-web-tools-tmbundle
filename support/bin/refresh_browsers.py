@@ -1,5 +1,6 @@
 #!/usr/bin/env python
-# ====== tm_browser_refresh ==================================================
+# ============================================================================
+# ====== refresh_browsers.py =================================================
 # ============================================================================
 import os
 import subprocess
@@ -15,16 +16,22 @@ try:
 except KeyError:
   do_title_contains = False
 
+# ============================================================================
+# The delay before refreshment is also customizable as well
+# ============================================================================
 try:
   delay = str(os.environ['RP_REFRESH_DELAY'])
 except KeyError:
-  delay = "0.25" # delay before refreshing
+  delay = "0.1"
 
 
 # ============================================================================
 # dict containing the Applications
 #   appName: The name of the OS X process (differs from the display name)
-#   command: Command to be executed from within the shell to refresh the browser
+#   command_active: Applescript command to be executed to refresh last active 
+#                   window
+#   command_title:  Applescript command to be executed to refresh window based
+#                   on its title
 # ============================================================================
 apps = {
 "Safari"  : {
@@ -120,9 +127,10 @@ def check_app(arg):
              shell=True, stdout=subprocess.PIPE).communicate()
              [0])>0
 
-def process_script(command_str, replace_obj):
-  for k, v in replace_obj.iteritems():
-    command_str = command_str.replace(k, v)
+def process_script(command_str, replace_obj = ""):
+  if replace_obj:
+    for k, v in replace_obj.iteritems():
+      command_str = command_str.replace(k, v)
   return 'osascript -e \'delay ' + delay + '\n' + command_str + '\' &>/dev/null &'
 
 # ====== lets go! ============================================================
